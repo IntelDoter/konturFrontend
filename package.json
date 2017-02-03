@@ -1,0 +1,19 @@
+{
+  "name": "kontur_frontend",
+  "version": "0.0.1",
+  "description": "kontur test",
+  "main": "index.js",
+  "dependencies": {
+    "gulp": "^3.9.1",
+    "npm": "^4.1.2"
+  },
+  "devDependencies": {
+    "gulp-minify": "0.0.14",
+    "gulp-sass": "^3.1.0"
+  },
+  "scripts": {
+    "test": "index"
+  },
+  "author": "Dmitry Kholstinin",
+  "license": "ISC"
+}
