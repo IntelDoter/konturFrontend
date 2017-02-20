@@ -3,10 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <title>Autocomplete</title>
+
+    <script src="scripts/defiant.min.js"></script>
+    <script src="scripts/jquery-3.1.1.min.js"></script>
+    <script src="scripts/scripts.js"></script>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
+<div class="input_wrapper">
     <label>
-        <input type="text">
+        <input placeholder="Начните вводить код или название" id="my_input" type="text" class="autocomplete_small">
     </label>
+    <ul id="variants">
+
+    </ul>
+</div>
 </body>
 </html>

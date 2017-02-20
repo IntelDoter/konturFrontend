@@ -1,11 +1,95 @@
+$accent-color: #3f92d3;
+$border-color: #c5c5c5;
+$shadow-color: #e7e7e7;
+$hint-color: #aaa;
+$placeholder-color: #a8a8a8;
+$placeholder-focus-color: #cdcdcd;
+
+html {
+  font-size: 14px;
+  font-family: SegoeUI, sans-serif;
+}
+
+@font-face {
+  font-family: SegoeUI;
+  src: url(../fonts/SegoeUI.ttf);
+}
+
+body {
+  padding: 200px;
+}
+
 .test_block {
   width: 100px;
   height: 100px;
   border: 2px solid #000;
 }
 
-font-style {
-  font-family: SegoeUI;
+.input_wrapper {
+  width: 268px;
+  position: relative;
+}
+
+.autocomplete_small {
+  position: relative;
   color: #404040;
   line-height: 20px;
+  width: 100%;
+  height: 30px;
+  border: 1px solid #d9d9d9;
+  padding: 0 5px;
 }
+
+.autocomplete_small:focus {
+  outline: 2px solid #3f92d3;
+
+  .selected {
+    outline: 2px solid #3f92d3;
+  }
+}
+
+.autocomplete_small::-webkit-input-placeholder {
+  color: $placeholder-color;
+}
+
+.autocomplete_small:focus::-webkit-input-placeholder {
+  color: $placeholder-focus-color;
+}
+
+#variants {
+  list-style: none;
+  display: none;
+  padding: 0 0 12px 0;
+  margin: 1px 0;
+  position: absolute;
+  left: 0;
+  width: 125%;
+  border: 1px solid $border-color;
+  box-shadow: 0 2px 12px 2px $shadow-color;
+
+  li {
+    height: 27px;
+    padding: 0 8px;
+    line-height: 27px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .current {
+    background-color: $accent-color;
+    color: #fff;
+  }
+
+  .empty_search {
+    color: $hint-color;
+  }
+
+  .list_hint {
+    margin: 12px 8px 0;
+    font-size: 12px;
+    color: $hint-color;
+    cursor: default;
+  }
+}
+
+
