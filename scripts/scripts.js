@@ -1,45 +1,53 @@
 "use strict";
 
 $(document).ready(function() {
+    var list = $("#variants");
+    var input = $("#my_input");
+
     var cityArray;
     var found;
     var moreCount;
     var prevKey;
-    var list = $("#variants");
-    var input = $("#my_input");
     var prevFocusedListElem;
     var numberOfVariants;
+    var nextElem;
+    var isInputDone = false;
 
-    function isEmpty( el ){
+    function isEmpty(el) {
         return !$.trim(el.html())
     }
 
-    function capitalize(s)
-    {
+    function capitalize(s) {
         return s[0].toUpperCase() + s.slice(1);
+    }
+
+    function isDone() {
+        if (isInputDone) {
+
+        }
     }
 
     $.ajax({
         url: "./kladr.json",
         async: false,
         dataType: 'json',
-        success: function(data) {
+        success: function (data) {
             cityArray = data;
         }
     });
 
-    $("#my_input:text").focus(function() {
+    $("#my_input:text").focus(function () {
         if ($(this).val() != "") {
             $(this).select();
         }
     });
 
-    input.keyup(function(){
+    input.keyup(function () {
         var key = $(this).val();
         if (key && key != prevKey) {
             key = capitalize(key);
             prevKey = key;
-            found = JSON.search(cityArray, '//*[starts-with(City, "'+ key +'")]');
+            found = JSON.search(cityArray, '//*[starts-with(City, "' + key + '")]');
             list.show();
 
             if (found.length) {
@@ -84,24 +92,58 @@ $(document).ready(function() {
         prevFocusedListElem = $(this);
     });
 
-    list.on('click', 'li', function () {
+    list.on('mousedown', 'li', function (event) {
+        isInputDone = true;
         var new_value = $(this)[0].textContent;
         input.val(new_value);
         list.hide();
     });
-    if (prevFocusedListElem) {
-        $(document).keydown(function (event) {
-            switch (event.which) {
-                case 38: //up
-                    break;
-                case 40: //down
-                    prevFocusedListElem.next().addClass("current");
-                    prevFocusedListElem.removeClass("current");
-                    prevFocusedListElem = $(".current");
-                    break
-            }
-        });
 
-    }
+    input.blur(function() {
+       list.hide();
+    });
+
+    input.focus(function () {
+        if ($(this).val() != "" && !isInputDone) {
+            list.show();
+            $(document).keydown(function (event) {
+                switch (event.which) {
+                    case 38: //up
+                        event.preventDefault();
+                        if (prevFocusedListElem.prev().is("li")) {
+                            prevFocusedListElem.prev().addClass("current");
+                            prevFocusedListElem.removeClass("current");
+                            prevFocusedListElem = $(".current");
+                        } else {
+                            nextElem = prevFocusedListElem.parent().children(":last");
+                            nextElem.addClass("current");
+                            prevFocusedListElem.removeClass("current");
+                            prevFocusedListElem = $(".current");
+                        }
+                        break;
+                    case 40: //down
+                        event.preventDefault();
+                        if (prevFocusedListElem.next().is("li")) {
+                            prevFocusedListElem.next().addClass("current");
+                            prevFocusedListElem.removeClass("current");
+                            prevFocusedListElem = $(".current");
+                        } else {
+                            nextElem = prevFocusedListElem.parent().children(":first");
+                            nextElem.addClass("current");
+                            prevFocusedListElem.removeClass("current");
+                            prevFocusedListElem = $(".current");
+                        }
+                        break;
+                    case 13: //enter
+                        list.hide();
+                        input.val(prevFocusedListElem[0].textContent);
+                        isInputDone = true;
+                        break;
+                }
+            })
+        } else if ($(this).val() == "") {
+            isInputDone = false;
+        }
+    });
 
 });
