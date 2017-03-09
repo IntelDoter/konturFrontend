@@ -1,24 +1,40 @@
+@charset "UTF-8";
 html {
   font-size: 14px;
   font-family: SegoeUI, sans-serif; }
+
+*, *:before, *:after {
+  box-sizing: border-box; }
 
 @font-face {
   font-family: SegoeUI;
   src: url(../fonts/SegoeUI.ttf); }
 
-body {
-  padding: 200px; }
+.autocomplete__label {
+  display: block; }
 
-.test_block {
-  width: 100px;
-  height: 100px;
-  border: 2px solid #000; }
+.autocomplete-input-wrapper {
+  width: 100%;
+  display: block; }
 
-.input_wrapper {
+.wrapper {
+  float: left;
+  padding: 100px; }
+
+.wrapper__autocomplete {
+  margin-bottom: 150px; }
+
+.autocomplete {
   width: 268px;
   position: relative; }
 
-.autocomplete_small {
+.autocomplete__icon {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  margin-top: -3px; }
+
+.autocomplete-input {
   position: relative;
   color: #404040;
   line-height: 20px;
@@ -27,40 +43,71 @@ body {
   border: 1px solid #d9d9d9;
   padding: 0 5px; }
 
-.autocomplete_small:focus {
+.autocomplete-input:focus {
   outline: 2px solid #3f92d3; }
-  .autocomplete_small:focus .selected {
-    outline: 2px solid #3f92d3; }
 
-.autocomplete_small::-webkit-input-placeholder {
+.autocomplete-input_selected {
+  outline: 2px solid #3f92d3; }
+
+.autocomplete-input_invalid {
+  border: 2px solid #e5181d; }
+
+.autocomplete__invalid-text {
+  content: "Выберите значение из списка";
+  display: block;
+  color: red;
+  position: absolute;
+  left: 0;
+  bottom: -20px; }
+
+.autocomplete-input::-webkit-input-placeholder {
   color: #a8a8a8; }
 
-.autocomplete_small:focus::-webkit-input-placeholder {
+.autocomplete-input:focus::-webkit-input-placeholder {
   color: #cdcdcd; }
 
-#variants {
+.autocomplete__option-list {
   list-style: none;
   display: none;
-  padding: 0 0 12px 0;
+  padding: 0;
   margin: 1px 0;
   position: absolute;
   left: 0;
   width: 125%;
   border: 1px solid #c5c5c5;
   box-shadow: 0 2px 12px 2px #e7e7e7; }
-  #variants li {
-    height: 27px;
-    padding: 0 8px;
-    line-height: 27px;
-    cursor: pointer;
-    user-select: none; }
-  #variants .current {
-    background-color: #3f92d3;
-    color: #fff; }
-  #variants .empty_search {
-    color: #aaa; }
-  #variants .list_hint {
-    margin: 12px 8px 0;
-    font-size: 12px;
-    color: #aaa;
-    cursor: default; }
+
+.autocomplete__list-item, .option-list_empty {
+  padding: 0 8px;
+  line-height: 27px;
+  cursor: pointer;
+  user-select: none; }
+
+.option-list_current {
+  background-color: #3f92d3;
+  color: #fff; }
+
+.autocomplete__list-hint {
+  margin: 12px 8px;
+  font-size: 12px;
+  color: #aaa;
+  cursor: default; }
+
+.list-hint_top {
+  margin: 8px 8px 12px 8px; }
+
+.option-list_empty {
+  cursor: default;
+  margin: 0;
+  color: #aaa; }
+
+.option-list_with-arrow {
+  height: 135px;
+  overflow-y: auto; }
+
+.list-item_last-favorite {
+  border-bottom: 1px solid #c5c5c5;
+  padding-bottom: 5px; }
+
+.list-item_selected {
+  background-color: #efefef; }
