@@ -50,9 +50,9 @@
             var numberOfVariants;
             var isInputDone = false;
             var currentScroll = 0;
-            var emptyNow = true;
+
             if (options.type == "with arrow") {
-                var emptyListHeight = 27;
+                var listItemHeight = 27;
                 var originalHeight = list.height();
             }
 
@@ -63,7 +63,7 @@
                     }
                     list.children(":last").addClass("list-item_last-favorite");
                 } else {
-                    list.append("<p class='autocomplete__list-hint list-hint_top'>Популярые города</p>");
+                    list.append("<p class='autocomplete__list-hint list-hint_top'>Популярные города</p>");
                     for (var j = 0; j < favoritesArr.length; j++) {
                         list.append("<li class='autocomplete__list-item'>" + favoritesArr[j].City + "</li>");
                     }
@@ -71,7 +71,7 @@
             }
 
             function isEmpty(el) {
-                return !(el.find("p").length)
+                return !$.trim(el.html())
             }
 
             function capitalize(s) {
@@ -79,14 +79,12 @@
             }
 
             input.focus(function () {
-                var key = $(this).val();
-
-                $(this).removeClass("autocomplete-input_invalid");
-                $(this).next(".autocomplete__invalid-text").remove();
-
                 if ($(this).val() != "") {
                     $(this).select();
                 }
+
+                $(this).removeClass("autocomplete-input_invalid");
+                $(this).next(".autocomplete__invalid-text").remove();
 
                 if (options.type == "with arrow") {
                     if (isEmpty(list)) {
@@ -118,9 +116,6 @@
                         list.show();
                     }
 
-                    if (isInputDone && key != prevKey) {
-                        isInputDone = false;
-                    }
                 }
             });
 
@@ -174,11 +169,6 @@
                             input.val(prevKey);
                             isInputDone = true;
                             input.blur();
-                            if (options.type == "with arrow") {
-                                for (var j = 0; j < data.length; j++) {
-                                    list.append("<li class='autocomplete__list-item'>" + data[j].City + "</li>");
-                                }
-                            }
                             break;
 
                         case 27: //escape
@@ -186,13 +176,15 @@
                             break;
 
                         case 8: //backspace
-                            isInputDone = false;
                             prevKey = input.val();
                             break;
                     }
                 }
 
                 if (event.type == "keyup") {
+                    if (event.keyCode == 8) {
+                        isInputDone = false;
+                    }
                     var key = $(this).val();
                     if (key && key != prevKey && !isInputDone) {
                         key = capitalize(key);
@@ -243,7 +235,7 @@
                                 list.empty();
                             }
                             if (options.type == "with arrow") {
-                                list.height(emptyListHeight);
+                                list.height(listItemHeight);
                             }
                             list.append("<p class='option-list_empty'>Не найдено</p>");
                         }
@@ -260,9 +252,18 @@
                                 currentListElem.addClass("option-list_current");
                             }
                         } else {
-                            isInputDone = false;
-                            prevKey = key;
-                            list.hide();
+                            if (options.favorites) {
+                                list.empty();
+                                list.append("<p class='autocomplete__list-hint list-hint_top'>Популярные города</p>");
+                                for (var j = 0; j < favoritesArr.length; j++) {
+                                    list.append("<li class='autocomplete__list-item'>" + favoritesArr[j].City + "</li>");
+                                }
+                                list.show();
+                            } else {
+                                isInputDone = false;
+                                prevKey = key;
+                                list.hide();
+                            }
                         }
                     }
                 }
@@ -274,6 +275,10 @@
                 }
                 $(this).addClass("option-list_current");
                 currentListElem = $(this);
+                if (options.type == "with arrow") {
+                    currentScroll = currentListElem.position().top - listItemHeight;
+                    console.log(currentScroll);
+                }
             });
 
             list.on('mousedown', 'li', function () {
@@ -281,9 +286,6 @@
                 prevKey = $(this)[0].textContent;
                 input.val(prevKey);
                 list.hide();
-                if (options.type == "with arrow") {
-                    currentScroll = $(this).position().top;
-                }
             });
 
         };
