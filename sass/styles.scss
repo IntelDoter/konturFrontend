@@ -121,6 +121,13 @@ html {
   cursor: default;
 }
 
+.autocomplete__option-list-separator {
+  width: 100%;
+  height: 1px;
+  background-color: $border-color;
+  margin-top: 5px;
+}
+
 .list-hint_top {
   margin: 8px 8px 12px 8px;
 }
@@ -135,11 +142,6 @@ html {
 .option-list_with-arrow {
   height: 135px;
   overflow-y: auto;
-}
-
-.list-item_last-favorite {
-  border-bottom: 1px solid $border-color;
-  padding-bottom: 5px;
 }
 
 .list-item_selected {

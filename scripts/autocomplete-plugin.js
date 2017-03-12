@@ -9,22 +9,39 @@
         var make = function(){
             var input = $(this);
 
-            input.parent().append("<ul class='autocomplete__option-list'></ul>");
-            var list = input.parent().find(".autocomplete__option-list");
+            input.after("<ul class='autocomplete__option-list'></ul>");
+            var list = input.next(".autocomplete__option-list");
 
             if (options.type == "with arrow") {
+                input.after("<img class='autocomplete__icon' src='./img/arrow-down.svg' width='6px' height='6px' />");
                 list.addClass("option-list_with-arrow");
             } else {
                 list.addClass("option-list_without-arrow");
             }
 
-            list.on( 'mousewheel DOMMouseScroll', function (e) {
-                var e0 = e.originalEvent;
-                var delta = e0.wheelDelta || -e0.detail;
+            var found = [];
+            var moreCount;
+            var prevKey;
+            var currentListElem;
+            var numberOfVariants;
+            var numberInDataArr;
+            var isInputDone = false;
+            var empty = true;
+            var isInputStarted = false;
+            var currentScroll = 0;
 
-                this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
-                e.preventDefault();
-            });
+            if (options.type == "with arrow") {
+                var listItemHeight = 27;
+                var originalHeight = list.height();
+            }
+
+            function isEmpty() {
+                return !$.trim(list.html())
+            }
+
+            function capitalize(s) {
+                return s[0].toUpperCase() + s.slice(1);
+            }
 
             if (options.favorites) {
                 var favoritesArr = [
@@ -43,55 +60,49 @@
                 ]
             }
 
-            var found;
-            var moreCount;
-            var prevKey;
-            var currentListElem;
-            var numberOfVariants;
-            var isInputDone = false;
-            var currentScroll = 0;
+            list.on( 'mousewheel DOMMouseScroll', function (e) {
+                var e0 = e.originalEvent;
+                var delta = e0.wheelDelta || -e0.detail;
 
-            if (options.type == "with arrow") {
-                var listItemHeight = 27;
-                var originalHeight = list.height();
-            }
-
-            if (options.favorites) {
-                if (options.type == "with arrow") {
-                    for (var k = 0; k < favoritesArr.length; k++) {
-                        list.append("<li class='autocomplete__list-item'>" + favoritesArr[k].City + "</li>");
-                    }
-                    list.children(":last").addClass("list-item_last-favorite");
-                } else {
-                    list.append("<p class='autocomplete__list-hint list-hint_top'>Популярные города</p>");
-                    for (var j = 0; j < favoritesArr.length; j++) {
-                        list.append("<li class='autocomplete__list-item'>" + favoritesArr[j].City + "</li>");
-                    }
-                }
-            }
-
-            function isEmpty(el) {
-                return !$.trim(el.html())
-            }
-
-            function capitalize(s) {
-                return s[0].toUpperCase() + s.slice(1);
-            }
+                this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+                e.preventDefault();
+            });
 
             input.focus(function () {
                 if ($(this).val() != "") {
                     $(this).select();
                 }
 
-                $(this).removeClass("autocomplete-input_invalid");
-                $(this).next(".autocomplete__invalid-text").remove();
+                if ($(this).hasClass("autocomplete-input_invalid")) {
+                    $(this).removeClass("autocomplete-input_invalid");
+                    $(this).next(".autocomplete__invalid-text").remove();
+                }
 
                 if (options.type == "with arrow") {
-                    if (isEmpty(list)) {
-                        numberOfVariants = data.length;
-                        for (var i = 0; i < numberOfVariants; i++) {
+
+                    if (empty || isInputDone) {
+                        list.empty();
+                        if (options.favorites) {
+                            for (var k = 0; k < favoritesArr.length; k++) {
+                                list.append("<li class='autocomplete__list-item'>" + favoritesArr[k].City + "</li>");
+                            }
+                            list.append("<div class='autocomplete__option-list-separator'></div>");
+                        }
+
+                        for (var i = 0; i < data.length; i++) {
                             list.append("<li class='autocomplete__list-item'>" + data[i].City + "</li>");
                         }
+                    }
+
+                    if (numberInDataArr) {
+                        if (options.favorites) {
+                            numberInDataArr += options.favorites.length + 1;
+                            currentScroll = listItemHeight * numberInDataArr - listItemHeight * options.favorites.length;
+                        } else {
+                            currentScroll = listItemHeight * numberInDataArr;
+                        }
+                        list.scrollTop(currentScroll);
+                        list.children().eq(numberInDataArr).addClass("option-list_current");
                     }
 
                     list.show();
@@ -103,16 +114,16 @@
                         list.height(originalHeight);
                     }
 
-                    if (!currentListElem) {
-                        currentListElem = list.children(":first");
-                        currentListElem.addClass("option-list_current");
-                    }
                 } else {
-                    if (options.favorites && !isInputDone) {
-                        list.show();
+
+                    if (options.favorites && isEmpty()) {
+                        list.append("<p class='autocomplete__list-hint list-hint_top'>Популярные города</p>");
+                        for (var j = 0; j < favoritesArr.length; j++) {
+                            list.append("<li class='autocomplete__list-item'>" + favoritesArr[j].City + "</li>");
+                        }
                     }
 
-                    if ($(this).val() != "" && !isInputDone) {
+                    if ((options.favorites || $(this).val() != "") && !isInputDone) {
                         list.show();
                     }
 
@@ -120,7 +131,12 @@
             });
 
             input.blur(function () {
-                if (!isInputDone) {
+                if (found.length == 1) {
+                    isInputDone = true;
+                    prevKey = found[0].City;
+                    input.val(prevKey);
+                    found = [];
+                } else if (!isInputDone) {
                     $(this).addClass("autocomplete-input_invalid");
                     $(this).after("<div class='autocomplete__invalid-text'>Выберите значение из списка</div>");
                 }
@@ -169,6 +185,14 @@
                             input.val(prevKey);
                             isInputDone = true;
                             input.blur();
+                            if (options.type == "with arrow") {
+                                for (var i = 0; i < data.length; i++) {
+                                    if (data[i].City == prevKey) {
+                                        numberInDataArr = i;
+                                        break;
+                                    }
+                                }
+                            }
                             break;
 
                         case 27: //escape
@@ -182,18 +206,41 @@
                 }
 
                 if (event.type == "keyup") {
+                    var key = $(this).val();
+
                     if (event.keyCode == 8) {
                         isInputDone = false;
+
+                        if (options.type == "with arrow") {
+                            if (currentListElem) {
+                                currentListElem.removeClass("option-list_current");
+                            }
+                            currentScroll = 0;
+                            list.scrollTop(currentScroll);
+                        }
+
+                        if (key == "") {
+                            empty = true;
+                        }
                     }
-                    var key = $(this).val();
-                    if (key && key != prevKey && !isInputDone) {
+
+                    if (key != "" && key != prevKey && !isInputDone) {
+
+                        if (empty) {
+                            empty = false;
+                        }
+
+                        if (!isInputStarted) {
+                            isInputStarted = true;
+                        }
+
                         key = capitalize(key);
                         prevKey = key;
                         found = JSON.search(data, '//*[starts-with(City, "' + key + '")]');
                         list.show();
 
                         if (found.length) {
-                            if (!isEmpty(list)) {
+                            if (!isEmpty()) {
                                 list.empty();
                             }
                             numberOfVariants = found.length;
@@ -231,7 +278,7 @@
                             moreCount = found.length - 4;
 
                         } else {
-                            if (!isEmpty(list)) {
+                            if (!isEmpty()) {
                                 list.empty();
                             }
                             if (options.type == "with arrow") {
@@ -241,31 +288,38 @@
                         }
 
                     } else if (key == "") {
+
                         if (options.type == "with arrow") {
-                            if (isEmpty(list)) {
+                            if (isInputStarted) {
                                 list.empty();
                                 list.height(originalHeight);
                                 for (var j = 0; j < data.length; j++) {
                                     list.append("<li class='autocomplete__list-item'>" + data[j].City + "</li>");
                                 }
-                                currentListElem = list.children(":first");
-                                currentListElem.addClass("option-list_current");
+
+                                isInputStarted = false;
                             }
                         } else {
+
                             if (options.favorites) {
-                                list.empty();
-                                list.append("<p class='autocomplete__list-hint list-hint_top'>Популярные города</p>");
-                                for (var j = 0; j < favoritesArr.length; j++) {
-                                    list.append("<li class='autocomplete__list-item'>" + favoritesArr[j].City + "</li>");
+                                if (isInputStarted) {
+                                    list.empty();
+                                    list.append("<p class='autocomplete__list-hint list-hint_top'>Популярные города</p>");
+                                    for (var j = 0; j < favoritesArr.length; j++) {
+                                        list.append("<li class='autocomplete__list-item'>" + favoritesArr[j].City + "</li>");
+                                    }
+
+                                    isInputStarted = false;
                                 }
-                                list.show();
                             } else {
                                 isInputDone = false;
                                 prevKey = key;
                                 list.hide();
                             }
+
                         }
                     }
+
                 }
             });
 
@@ -276,8 +330,7 @@
                 $(this).addClass("option-list_current");
                 currentListElem = $(this);
                 if (options.type == "with arrow") {
-                    currentScroll = currentListElem.position().top - listItemHeight;
-                    console.log(currentScroll);
+                    currentScroll = list.scrollTop();
                 }
             });
 
@@ -286,6 +339,14 @@
                 prevKey = $(this)[0].textContent;
                 input.val(prevKey);
                 list.hide();
+                if (options.type == "with arrow") {
+                    for (var i = 0; i < data.length; i++) {
+                        if (data[i].City == prevKey) {
+                            numberInDataArr = i;
+                            break;
+                        }
+                    }
+                }
             });
 
         };
