@@ -22,7 +22,6 @@ html {
 
 .autocomplete__label {
   display: block;
-
 }
 
 .autocomplete-input-wrapper {
@@ -44,12 +43,12 @@ html {
   position: relative;
 }
 
-.autocomplete__icon {
+/*.autocomplete__icon {
   position: absolute;
   right: 8px;
   top: 50%;
   margin-top: -3px;
-}
+}*/
 
 .autocomplete-input {
   position: relative;
@@ -59,6 +58,12 @@ html {
   height: 30px;
   border: 1px solid #d9d9d9;
   padding: 0 5px;
+}
+
+.autocomplete-input_with-arrow {
+  background: url(../img/arrow-down.svg) no-repeat;
+  background-position: 97% 50%;
+  background-size: 6px 6px;
 }
 
 .autocomplete-input:focus {
@@ -105,6 +110,7 @@ html {
 .autocomplete__list-item {
   padding: 0 8px;
   line-height: 27px;
+  height: 27px;
   cursor: pointer;
   user-select: none;
 }
