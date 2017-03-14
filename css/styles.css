@@ -28,12 +28,6 @@ html {
   width: 268px;
   position: relative; }
 
-/*.autocomplete__icon {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  margin-top: -3px;
-}*/
 .autocomplete-input {
   position: relative;
   color: #404040;
