@@ -76,7 +76,7 @@ html {
   border: 1px solid #c5c5c5;
   box-shadow: 0 2px 12px 2px #e7e7e7; }
 
-.autocomplete__list-item, .option-list_empty {
+.autocomplete__list-item, .option-list_empty, .autocomplete__loading {
   padding: 0 8px;
   line-height: 27px;
   height: 27px;
@@ -113,3 +113,23 @@ html {
 
 .list-item_selected {
   background-color: #efefef; }
+
+.loader {
+  width: 16px;
+  height: 16px;
+  background-image: url(../img/loader.gif);
+  background-size: 16px;
+  display: inline-block;
+  margin-top: 3px; }
+
+.autocomplete__loading {
+  cursor: default;
+  margin: 0;
+  color: #aaa;
+  float: left; }
+
+.test {
+  height: 10000px;
+  width: 100px;
+  background-color: #404040;
+  overflow-y: scroll; }

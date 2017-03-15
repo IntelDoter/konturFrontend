@@ -146,3 +146,27 @@ html {
 .list-item_selected {
   background-color: $selected-value-color;
 }
+
+.loader {
+  width: 16px;
+  height: 16px;
+  background-image: url(../img/loader.gif);
+  background-size: 16px;
+  display: inline-block;
+  margin-top: 3px;
+}
+
+.autocomplete__loading {
+  @extend .autocomplete__list-item;
+  cursor: default;
+  margin: 0;
+  color: $hint-color;
+  float: left;
+}
+
+.test {
+  height: 10000px;
+  width: 100px;
+  background-color: #404040;
+  overflow-y: scroll;
+}
