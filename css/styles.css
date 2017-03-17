@@ -127,9 +127,3 @@ html {
   margin: 0;
   color: #aaa;
   float: left; }
-
-.test {
-  height: 10000px;
-  width: 100px;
-  background-color: #404040;
-  overflow-y: scroll; }

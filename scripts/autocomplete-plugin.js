@@ -20,10 +20,11 @@
 
             var filteredArr;
             var currentListElem;
-            var currentListElemIndex;
+            var currentListElemIndex = -1;
             var numberOfVariants;
             var isInputDone = false;
             var currentScroll = 0;
+            var prevKey;
 
             if (options.type == "with arrow") { // запоминаем высоту элементов, для их последующего уменьшения увеличения
                 var listItemHeight = 27;
@@ -39,14 +40,23 @@
             }
 
             function getElemIndex(value) { // функция для вычисления положения элемента в списке
+                var index;
                 for (var i = 0; i < data.length; i++) {
                     if (value == data[i].City) {
-                        currentListElemIndex = i;
+                        index = i;
                         break;
                     }
                 }
                 if (options.favorites) { // если в списке есть избранные, добавляем их количество к индексу
-                    currentListElemIndex += favoritesArr.length + 1;
+                    index += favoritesArr.length + 1;
+                }
+
+                return index
+            }
+
+            function fillList(arr, length) {
+                for (var i = 0; i < length; i++) {
+                    list.append("<li class='autocomplete__list-item'>" + arr[i].City + "</li>");
                 }
             }
 
@@ -99,15 +109,11 @@
                         }
 
                         if (options.favorites) { // добавление элементов в список
-                            for (var k = 0; k < favoritesArr.length; k++) {
-                                list.append("<li class='autocomplete__list-item'>" + favoritesArr[k].City + "</li>");
-                            }
+                            fillList(favoritesArr, favoritesArr.length);
                             list.append("<div class='autocomplete__option-list-separator'></div>");
                         }
 
-                        for (var i = 0; i < data.length; i++) {
-                            list.append("<li class='autocomplete__list-item'>" + data[i].City + "</li>");
-                        }
+                        fillList(data, data.length);
 
                         if (list.height() != originalHeight) { // если до этого лист был уменьшен, возвращаем ему первоначальную высоту
                             list.height(originalHeight);
@@ -116,20 +122,21 @@
 
                     list.show();
 
-                    if (currentListElemIndex) { // если до этого был выбран элемент, делаем фокус на него и скроллим
+                    if (currentListElemIndex != -1) { // если до этого был выбран элемент, делаем фокус на него и скроллим
                         currentListElem = list.children().eq(currentListElemIndex);
                         currentListElem.addClass("option-list_current");
 
                         currentScroll = listItemHeight * currentListElemIndex;
+                        if (options.favorites) {
+                            currentScroll -= 20; // если в списке есть избранное, прибавляем так же высоту раздеояющей полосы
+                        }
                         list.scrollTop(currentScroll);
                     }
                 } else {
 
                     if (options.favorites && isEmpty()) {
                         list.append("<p class='autocomplete__list-hint list-hint_top'>Популярные города</p>");
-                        for (var j = 0; j < favoritesArr.length; j++) {
-                            list.append("<li class='autocomplete__list-item'>" + favoritesArr[j].City + "</li>");
-                        }
+                        fillList(favoritesArr, favoritesArr.length);
                     }
 
                     if ((options.favorites || $(this).val() != "") && !isInputDone) {
@@ -153,6 +160,10 @@
 
             input.on("input", function () {
                 var key = $(this).val();
+                prevKey = key;
+                if (key.length <= prevKey.length) {
+                    filteredArr = data;
+                }
                 isInputDone = false; // на любое изменение поля, делаем статус ввода незаконченным
                 list.empty();
 
@@ -164,17 +175,14 @@
 
                     list.empty();
                     filteredArr = JSON.search(filteredArr, '//*[starts-with(City, "' + key + '")]'); // поиск значения в массиве
-                    list.show();
 
                     if (filteredArr.length) {
 
                         numberOfVariants = filteredArr.length;
 
                         if (options.type == "with arrow") {
-                            for (var i = 0; i < numberOfVariants; i++) {
-                                list.append("<li class='autocomplete__list-item'>" + filteredArr[i].City + "</li>");
-                            }
 
+                            fillList(filteredArr, numberOfVariants);
                             if (numberOfVariants * listItemHeight < originalHeight) { // если суммарная высота элементов в списке, меньше чем изначальная высота, уменьшаем высоту листа
                                 list.height(Math.ceil(numberOfVariants * listItemHeight))
                             } else { // иначе, если высота элементов больше, возвращаем первоначальную высоту
@@ -186,9 +194,7 @@
                                 numberOfVariants = 5; // если вариантов больше 5, тогда отображаем только 5, остальные скрываем
                             }
 
-                            for (var i = 0; i < numberOfVariants; i++) {
-                                list.append("<li class='autocomplete__list-item'>" + filteredArr[i].City + "</li>");
-                            }
+                            fillList(filteredArr, numberOfVariants);
                         }
 
                         list.children(":first").addClass("option-list_current"); // присваиваем первому элементу в списке класс selected
@@ -208,6 +214,7 @@
                         }
                         list.append("<p class='option-list_empty'>Не найдено</p>");
                     }
+                    list.show();
                 } else if (key == "") {
 
                     if (options.type == "with arrow") {
@@ -283,10 +290,17 @@
                         event.preventDefault();
                         if (currentListElem) { // если в списке есть выбранный элемент
                             list.hide();
+
                             var selectedValue = currentListElem[0].textContent;
                             if (options.type == "with arrow") {
                                 if (options.type == "with arrow") {
-                                    getElemIndex(selectedValue)
+                                    if (currentListElem) {
+                                        if (input.val() == "") {
+                                            currentListElemIndex = currentListElem.index();
+                                        } else {
+                                            currentListElemIndex = getElemIndex(selectedValue);
+                                        }
+                                    }
                                 }
                             }
 
@@ -299,11 +313,6 @@
 
                     case 27: //escape
                         list.hide();
-                        break;
-
-                    case 8: //backspace
-                        filteredArr = data;
-                        isInputDone = false;
                         break;
                 }
             });
@@ -319,12 +328,18 @@
             list.on('mousedown', 'li', function () {
                 isInputDone = true;
                 var selectedValue = $(this)[0].textContent;
-                input.val(selectedValue);
 
                 if (options.type == "with arrow") {
-                    getElemIndex(selectedValue)
+                    if (currentListElem) {
+                        if (input.val() != "") {
+                            currentListElemIndex = currentListElem.index();
+                        } else {
+                            currentListElemIndex = getElemIndex(selectedValue);
+                        }
+                    }
                 }
 
+                input.val(selectedValue);
                 currentListElem.removeClass("option-list_current");
                 currentListElem = false;
                 list.hide();
