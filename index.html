@@ -6,8 +6,6 @@
     <title>Autocomplete</title>
 
     <script src="scripts/jquery-3.1.1.min.js"></script>
-    <script src="scripts/data.js"></script>
-    <script src="scripts/defiant.min.js"></script>
     <script src="scripts/autocomplete-plugin.js"></script>
     <script src="scripts/scripts.js"></script>
     <link rel="stylesheet" href="css/styles.css">
@@ -15,46 +13,32 @@
 <body>
 
 <div class="wrapper">
-
     <h2>Со стрелкой</h2>
     <div class="wrapper__autocomplete autocomplete autocomplete-with-arrow">
-        <label class="autocomplete__label" for="input_1"></label>
-        <div class="autocomplete-input-wrapper">
-            <input type="text" class="autocomplete-input autocomplete-input_with-arrow" placeholder="Введите или выберите из списка" id="input_1" />
-        </div>
+        <label class="autocomplete__label" for="input_1">Город</label>
+        <input type="text" class="autocomplete__input autocomplete__input_with-arrow" placeholder="Введите или выберите из списка" id="input_1" />
     </div>
-
-    <h2>Обычный</h2>
-    <div class="wrapper__autocomplete autocomplete autocomplete-without-arrow">
-        <label class="autocomplete__label" for="input_2"></label>
-        <div class="autocomplete-input-wrapper">
-            <input type="text" class="autocomplete-input" placeholder="Начните вводить код или название" id="input_2" />
-        </div>
-    </div>
-
-</div>
-
-<div class="wrapper">
 
     <h2>Со стрелкой, с избранными</h2>
     <div class="wrapper__autocomplete autocomplete autocomplete-with-arrow">
-        <label class="autocomplete__label" for="input_3"></label>
-        <div class="autocomplete-input-wrapper">
-            <input type="text" class="autocomplete-input autocomplete-input_with-arrow" placeholder="Введите или выберите из списка" id="input_3" />
-        </div>
+        <label class="autocomplete__label" for="input_3">Город</label>
+        <input type="text" class="autocomplete__input autocomplete__input_with-arrow" placeholder="Введите или выберите из списка" id="input_3" />
     </div>
-
-    <h2>Обычный, с избранными</h2>
-    <div class="wrapper__autocomplete autocomplete autocomplete-without-arrow">
-        <label class="autocomplete__label" for="input_4"></label>
-        <div class="autocomplete-input-wrapper">
-            <input type="text" class="autocomplete-input" placeholder="Начните вводить код или название" id="input_4" />
-        </div>
-    </div>
-
 </div>
 
+<div class="wrapper">
+    <h2>Без стрелки</h2>
+    <div class="wrapper__autocomplete autocomplete autocomplete-without-arrow">
+        <label class="autocomplete__label" for="input_2">Город</label>
+        <input type="text" class="autocomplete__input" placeholder="Начните вводить код или название" id="input_2" />
+    </div>
 
+    <h2>Без стрелки, с избранными</h2>
+    <div class="wrapper__autocomplete autocomplete autocomplete-without-arrow">
+        <label class="autocomplete__label" for="input_4">Город</label>
+        <input type="text" class="autocomplete__input" placeholder="Начните вводить код или название" id="input_4" />
+    </div>
+</div>
 
 </body>
 </html>

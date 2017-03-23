@@ -1,0 +1,25 @@
+html {
+  font-size: 14px;
+  font-family: SegoeUI, sans-serif;
+}
+
+*, *:before, *:after {
+  box-sizing: border-box;
+}
+
+@font-face {
+  font-family: SegoeUI;
+  src: local(SegoeUI),
+       url(../fonts/SegoeUI.eot),
+       url(../fonts/SegoeUI.ttf);
+}
+
+.wrapper {
+  float: left;
+  padding: 100px;
+}
+
+.wrapper__autocomplete {
+  width: 300px;
+  margin-bottom: 200px;
+}

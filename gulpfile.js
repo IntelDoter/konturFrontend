@@ -15,7 +15,7 @@ gulp.task('sass', function () {
 });
 
 gulp.task('watch', function () {
-    gulp.watch('./sass/*.scss', ['sass']);
+    gulp.watch('./sass/styles/*.scss', ['sass']);
 });
 
 gulp.task('compress_js', function() {
@@ -26,19 +26,7 @@ gulp.task('compress_js', function() {
                 min:'.js'
             },
             exclude: ['tasks'],
-            ignoreFiles: ['.combo.js', '-min.js']
+            ignoreFiles: ['.combo.js', '.min.js']
         }))
-        .pipe(gulp.dest('scripts'))
-});
-
-gulp.task('compress_css', function() {
-    gulp.src('css/*.css')
-        .pipe(minify({
-            ext:{
-                src:'*.js',
-                min:'min.js'
-            },
-            ignoreFiles: ['-min.js']
-        }))
-        .pipe(gulp.dest('styles'))
+        .pipe(gulp.dest('dist/scripts'))
 });
